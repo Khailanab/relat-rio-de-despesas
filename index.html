@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Controle de Despesas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="loginScreen" class="auth-shell">
+    <div class="auth-card">
+      <div class="brand-mark">CD</div>
+      <div class="eyebrow">Controle interno</div>
+      <h1>Despesas de rota</h1>
+      <p class="muted">Acesse com sua matrícula MZ.</p>
+      <form id="loginForm">
+        <label>MZ
+          <input id="loginMz" autocomplete="username" placeholder="MZ-000000" required>
+        </label>
+        <label>Senha
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+        </label>
+        <button class="btn primary full" type="submit">Entrar</button>
+        <div id="loginError" class="form-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Controle interno</div>
+        <strong>Despesas de rota</strong>
+      </div>
+      <div class="top-actions">
+        <span id="currentUser" class="user-chip"></span>
+        <button id="logoutBtn" class="btn ghost">Sair</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="supervisorView" class="hidden">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Prestação de contas</div>
+            <h2>Meus relatórios</h2>
+            <p class="muted">Um relatório por dia de rota.</p>
+          </div>
+          <button id="newReportBtn" class="btn primary">+ Novo relatório</button>
+        </div>
+        <div id="supervisorReports" class="report-list"></div>
+      </section>
+
+      <section id="adminView" class="hidden">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Coordenação</div>
+            <h2>Controle de despesas</h2>
+            <p class="muted">Acompanhe, revise e consolide os relatórios recebidos.</p>
+          </div>
+          <div class="head-actions">
+            <button id="templateBtn" class="btn secondary">Modelo da planilha</button>
+            <button id="exportBtn" class="btn primary">Exportar Excel</button>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span>Relatórios</span><strong id="statReports">0</strong></div>
+          <div class="stat"><span>KM</span><strong id="statKm">0</strong></div>
+          <div class="stat"><span>Valor KM</span><strong id="statKmValue">R$ 0,00</strong></div>
+          <div class="stat"><span>Reembolsável</span><strong id="statTotal">R$ 0,00</strong></div>
+        </div>
+
+        <div class="filters">
+          <label>De <input id="filterFrom" type="date"></label>
+          <label>Até <input id="filterTo" type="date"></label>
+          <label>Supervisor <select id="filterSupervisor"><option value="">Todos</option></select></label>
+          <button id="filterBtn" class="btn secondary">Filtrar</button>
+          <button id="clearFilterBtn" class="btn ghost">Limpar</button>
+        </div>
+
+        <div id="adminReports" class="table-wrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="reportDialog">
+    <form id="reportForm" method="dialog" class="dialog-card">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Relatório diário</div>
+          <h3 id="dialogTitle">Novo relatório</h3>
+        </div>
+        <button type="button" class="icon-btn" data-close>×</button>
+      </div>
+
+      <input type="hidden" id="reportId">
+      <div class="grid two">
+        <label>Data da rota
+          <input id="routeDate" type="date" required>
+        </label>
+        <label>Placa do veículo
+          <input id="plate" maxlength="10" placeholder="ABC1D23" required>
+        </label>
+      </div>
+
+      <div class="section-title">Quilometragem</div>
+      <div class="grid two">
+        <label>KM inicial
+          <input id="kmStart" type="number" min="0" step="1" required>
+        </label>
+        <label>Foto do odômetro inicial
+          <input id="photoStart" type="file" accept="image/*" required>
+        </label>
+        <label>KM final
+          <input id="kmEnd" type="number" min="0" step="1" required>
+        </label>
+        <label>Foto do odômetro final
+          <input id="photoEnd" type="file" accept="image/*" required>
+        </label>
+      </div>
+      <div id="kmPreview" class="calc-box">KM percorridos: <strong>0</strong> · Valor: <strong>R$ 0,00</strong></div>
+
+      <div class="section-title row-between">
+        <span>Despesas extras</span>
+        <button id="addExpenseBtn" type="button" class="btn small secondary">+ Despesa</button>
+      </div>
+      <div id="expenses"></div>
+
+      <div class="section-title">Hospedagem</div>
+      <div class="grid two">
+        <label>Valor da hospedagem
+          <input id="hotelValue" type="number" min="0" step="0.01" value="0">
+        </label>
+        <label>Comprovante
+          <input id="hotelReceipt" type="file" accept="image/*,.pdf">
+        </label>
+      </div>
+
+      <label>Observações
+        <textarea id="notes" rows="3" placeholder="Opcional"></textarea>
+      </label>
+
+      <div id="formError" class="form-error"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn ghost" data-close>Cancelar</button>
+        <button class="btn primary" type="submit">Salvar relatório</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="detailDialog">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Detalhes</div>
+          <h3 id="detailTitle"></h3>
+        </div>
+        <button type="button" class="icon-btn" data-close>×</button>
+      </div>
+      <div id="detailBody"></div>
+      <div class="dialog-actions">
+        <button id="editDetailBtn" class="btn primary">Editar</button>
+        <button type="button" class="btn ghost" data-close>Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
