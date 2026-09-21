@@ -137,7 +137,15 @@ async function saveReport(e){
     if($('#photoStart').files[0])startPath=await uploadFile($('#photoStart').files[0],'odometro-inicial');
     if($('#photoEnd').files[0])endPath=await uploadFile($('#photoEnd').files[0],'odometro-final');
     if($('#hotelReceipt').files[0])hotelPath=await uploadFile($('#hotelReceipt').files[0],'hotel');
-    const payload={supervisor_id:profile.id,route_date:$('#routeDate').value,plate:$('#plate').value.trim().toUpperCase(),km_start:start,km_end:end,km_travelled:km,km_value:km*RATE,hotel_value:hotel,hotel_receipt_path:hotelPath,notes:$('#notes').value.trim()};
+   const payload={
+  supervisor_id:profile.id,
+  route_date:$('#routeDate').value,
+  plate:$('#plate').value.trim().toUpperCase(),
+  km_start:start,
+  km_end:end,
+  hotel_value:hotel,
+  hotel_receipt_path:hotelPath,
+  notes:$('#notes').value.trim()};
     let reportId=editingReport?.id;
     if(reportId){const {error}=await sb.from('daily_reports').update(payload).eq('id',reportId);if(error)throw error;await sb.from('expenses').delete().eq('report_id',reportId)}
     else {const {data,error}=await sb.from('daily_reports').insert(payload).select('id').single();if(error)throw error;reportId=data.id}
